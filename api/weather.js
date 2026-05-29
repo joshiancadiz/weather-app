@@ -1,8 +1,8 @@
 export default async function handler(req, res) {
-    const { city } = req.query;
+    const { city, lat, lon } = req.query;
 
-    if (!city) {
-        return res.status(400).json({ error: "City parameter is required." });
+    if (!city && (!lat || !lon)) {
+        return res.status(400).json({ error: "Either city or lat/lon parameters are required." });
     }
 
     const apiKey = process.env.API_KEY;
@@ -12,10 +12,11 @@ export default async function handler(req, res) {
     }
 
     try {
-        const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`
-        );
+        const url = city 
+            ? `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`
+            : `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
 
+        const response = await fetch(url);
         const data = await response.json();
 
         if (!response.ok) {

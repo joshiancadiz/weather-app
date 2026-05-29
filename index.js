@@ -4,6 +4,7 @@ const weatherDataEl = document.getElementById("weather-data");
 const cityInputEl = document.getElementById("city-input");
 const formEl = document.querySelector(".search-form");
 const submitBtn = document.getElementById("search-btn");
+const locationBtn = document.getElementById("location-btn");
 
 const loaderEl = document.getElementById("loader");
 const errorContainerEl = document.getElementById("error-container");
@@ -41,6 +42,59 @@ formEl.addEventListener("submit", (event) => {
     }
 });
 
+locationBtn.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+        showError("Geolocation is not supported by your browser.");
+        return;
+    }
+
+    // Set UI to loading state immediately
+    errorContainerEl.classList.add("hidden");
+    weatherDataEl.classList.add("hidden");
+    loaderEl.classList.remove("hidden");
+    
+    cityInputEl.disabled = true;
+    submitBtn.disabled = true;
+    locationBtn.disabled = true;
+    cityInputEl.value = "";
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            getWeatherData({ lat, lon });
+        },
+        (error) => {
+            let errMsg = "Unable to retrieve your location.";
+            if (error.code === error.PERMISSION_DENIED) {
+                errMsg = "Location access denied. Please check your browser location permissions.";
+            } else if (error.code === error.POSITION_UNAVAILABLE) {
+                errMsg = "Location information is unavailable.";
+            } else if (error.code === error.TIMEOUT) {
+                errMsg = "Location request timed out. Please try again.";
+            }
+            showError(errMsg);
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+});
+
+function showError(message) {
+    updateBackgroundTheme("default");
+    errorTextEl.textContent = message;
+    loaderEl.classList.add("hidden");
+    errorContainerEl.classList.remove("hidden");
+    
+    cityInputEl.disabled = false;
+    submitBtn.disabled = false;
+    locationBtn.disabled = false;
+    cityInputEl.focus();
+}
+
 function updateBackgroundTheme(weatherMain) {
     const condition = weatherMain ? weatherMain.toLowerCase() : "default";
 
@@ -70,16 +124,24 @@ function getFormattedDate() {
     return new Date().toLocaleDateString('en-US', options);
 }
 
-async function getWeatherData(cityValue) {
+async function getWeatherData(query) {
     errorContainerEl.classList.add("hidden");
     weatherDataEl.classList.add("hidden");
     loaderEl.classList.remove("hidden");
 
     cityInputEl.disabled = true;
     submitBtn.disabled = true;
+    locationBtn.disabled = true;
 
     try {
-        const response = await fetch(`/api/weather?city=${encodeURIComponent(cityValue)}`);
+        let url;
+        if (typeof query === "string") {
+            url = `/api/weather?city=${encodeURIComponent(query)}`;
+        } else {
+            url = `/api/weather?lat=${query.lat}&lon=${query.lon}`;
+        }
+
+        const response = await fetch(url);
 
         if (!response.ok) {
             let errorMsg = "Unable to retrieve weather. Please try again later.";
@@ -133,6 +195,7 @@ async function getWeatherData(cityValue) {
     } finally {
         cityInputEl.disabled = false;
         submitBtn.disabled = false;
+        locationBtn.disabled = false;
 
         cityInputEl.focus();
     }
