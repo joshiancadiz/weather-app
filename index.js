@@ -1,13 +1,4 @@
-// API key is handled server-side via Vercel serverless function (/api/weather.js) or via localStorage locally.
-
-// Detect if running locally via file:// protocol
-const isLocalFile = window.location.protocol === "file:";
-
-const settingsBtn = document.getElementById("settings-btn");
-const settingsModal = document.getElementById("settings-modal");
-const closeModalBtn = document.getElementById("close-modal-btn");
-const saveKeyBtn = document.getElementById("save-key-btn");
-const apiKeyInput = document.getElementById("api-key-input");
+// API key is handled server-side via Vercel serverless function (/api/weather.js)
 
 const weatherDataEl = document.getElementById("weather-data");
 const cityInputEl = document.getElementById("city-input");
@@ -50,51 +41,6 @@ formEl.addEventListener("submit", (event) => {
     }
 });
 
-// Configure settings modal behaviors for local testing
-if (isLocalFile) {
-    // Show settings gear button if opened directly via file://
-    settingsBtn.classList.remove("hidden");
-
-    // Pre-populate input with existing key if available
-    const savedKey = localStorage.getItem("weather_api_key");
-    if (savedKey) {
-        apiKeyInput.value = savedKey;
-    }
-
-    // Modal click behaviors
-    settingsBtn.addEventListener("click", () => {
-        settingsModal.classList.remove("hidden");
-        apiKeyInput.focus();
-    });
-
-    closeModalBtn.addEventListener("click", () => {
-        settingsModal.classList.add("hidden");
-    });
-
-    window.addEventListener("click", (event) => {
-        if (event.target === settingsModal) {
-            settingsModal.classList.add("hidden");
-        }
-    });
-
-    saveKeyBtn.addEventListener("click", () => {
-        const key = apiKeyInput.value.trim();
-        if (key) {
-            localStorage.setItem("weather_api_key", key);
-            settingsModal.classList.add("hidden");
-            
-            // Re-trigger query if a city name is already inputted
-            const cityValue = cityInputEl.value.trim();
-            if (cityValue) {
-                getWeatherData(cityValue);
-            }
-        } else {
-            localStorage.removeItem("weather_api_key");
-            settingsModal.classList.add("hidden");
-        }
-    });
-}
-
 function updateBackgroundTheme(weatherMain) {
     const condition = weatherMain ? weatherMain.toLowerCase() : "default";
 
@@ -133,19 +79,7 @@ async function getWeatherData(cityValue) {
     submitBtn.disabled = true;
 
     try {
-        let response;
-        if (isLocalFile) {
-            const localKey = localStorage.getItem("weather_api_key");
-            if (!localKey) {
-                // Auto-open modal to guide the user visually
-                settingsModal.classList.remove("hidden");
-                apiKeyInput.focus();
-                throw new Error("Local API key is not configured. Enter your OpenWeatherMap API Key in the settings panel (gear icon in the top right) to run weather queries locally.");
-            }
-            response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityValue)}&appid=${localKey}&units=metric`);
-        } else {
-            response = await fetch(`/api/weather?city=${encodeURIComponent(cityValue)}`);
-        }
+        const response = await fetch(`/api/weather?city=${encodeURIComponent(cityValue)}`);
 
         if (!response.ok) {
             let errorMsg = "Unable to retrieve weather. Please try again later.";
