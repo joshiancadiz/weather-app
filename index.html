@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Simple Weather App</title>
+</head>
+
+<body class="weather-default">
+    <div class="ambient-glow bg-glow-1"></div>
+    <div class="ambient-glow bg-glow-2"></div>
+
+    <div class="container">
+        <header class="app-header">
+            <div class="brand">
+                <i class="fa-solid fa-cloud-sun brand-icon"></i>
+                <h1>SkyFlow</h1>
+            </div>
+            <p class="subtitle">Experience Weather Beautifully</p>
+        </header>
+
+        <form class="search-form">
+            <div class="input-wrapper">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="city-input" placeholder="Enter city name..." autocomplete="off">
+            </div>
+            <button type="submit" id="search-btn">
+                <span>Search</span>
+                <i class="fa-solid fa-arrow-right-long btn-icon"></i>
+            </button>
+        </form>
+
+        <!-- Dynamic Content Area -->
+        <div class="content-wrapper">
+            <!-- Loading Indicator -->
+            <div class="loading-state hidden" id="loader">
+                <div class="spinner"></div>
+                <p>Gathering atmospheric data...</p>
+            </div>
+
+            <!-- Error State -->
+            <div class="error-state hidden" id="error-container">
+                <i class="fa-solid fa-triangle-exclamation error-icon"></i>
+                <p id="error-text">An error occurred. Please try again.</p>
+            </div>
+
+            <!-- Weather Details Output -->
+            <div id="weather-data" class="weather-data hidden">
+                <div class="main-weather">
+                    <h2 class="city-name" id="city-name">London, GB</h2>
+                    <p class="current-date" id="current-date">Friday, May 29</p>
+                    <div class="weather-visual">
+                        <div class="icon" id="weather-icon">
+                            <!-- Injected dynamic weather icon img -->
+                        </div>
+                        <div class="temperature" id="temperature">20°C</div>
+                    </div>
+                    <div class="description" id="weather-description">scattered clouds</div>
+                </div>
+
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <div class="card-icon">
+                            <i class="fa-solid fa-temperature-half feels-like-icon"></i>
+                        </div>
+                        <div class="card-info">
+                            <span class="card-label">Feels Like</span>
+                            <span class="card-value" id="feels-like">-</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="card-icon">
+                            <i class="fa-solid fa-droplet humidity-icon"></i>
+                        </div>
+                        <div class="card-info">
+                            <span class="card-label">Humidity</span>
+                            <span class="card-value" id="humidity">-</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="card-icon">
+                            <i class="fa-solid fa-wind wind-icon"></i>
+                        </div>
+                        <div class="card-info">
+                            <span class="card-label">Wind Speed</span>
+                            <span class="card-value" id="wind-speed">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>
