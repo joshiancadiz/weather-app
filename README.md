@@ -42,13 +42,14 @@ git clone https://github.com/joshiancadiz/weather-app.git
 cd weather-app
 ```
 
-2. Open `script.js` and replace the placeholder with your API key:
+2. Create a `.env` file in the root directory and add your OpenWeatherMap API key:
 
-```js
-const key = "YOUR_API_KEY_HERE";
+```env
+API_KEY=your_actual_api_key_here
 ```
 
-3. Open `index.html` in your browser and you're good to go.
+3. **Local Development:** Run the app using a local development server (such as Vercel CLI via `vercel dev` or Live Server).
+4. **Vercel Deployment:** Set the `API_KEY` environment variable in your Vercel Project Settings under **Settings > Environment Variables**.
 
 ---
 
